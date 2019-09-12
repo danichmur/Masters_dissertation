@@ -1,42 +1,44 @@
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 public class Vertex {
 
-    private int idx;
+    private final int idx;
 
-    private String peptide;
+    private final String peptide;
 
-    private int[] intervals;
+    private final int[] intervals;
 
     public int getIdx() {
         return idx;
-    }
-
-    public void setIdx(int idx) {
-        this.idx = idx;
     }
 
     public String getPeptide() {
         return peptide;
     }
 
-    public void setPeptide(String peptide) {
-        this.peptide = peptide;
-    }
-
     public int[] getIntervals() {
         return intervals;
-    }
-
-    public void setIntervals(int[] intervals) {
-        this.intervals = intervals;
     }
 
     public Vertex(int idx, String peptide, int[] intervals) {
         this.idx = idx;
         this.peptide = peptide;
         this.intervals = intervals;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Vertex vertex = (Vertex) o;
+        return getIdx() == vertex.getIdx();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getIdx());
     }
 
     @Override

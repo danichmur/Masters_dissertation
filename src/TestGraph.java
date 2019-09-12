@@ -1,21 +1,24 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
 
-public class TestGraph {
+class TestGraph {
 
-    public LinkedList[] getAdjustedList() {
+    TestGraphElement[] getAdjustedList() {
         return adjustedList;
     }
 
-    private LinkedList[] adjustedList;
+    private TestGraphElement[] adjustedList;
 
-    public TestGraph(int vertices) {
-        adjustedList = new LinkedList[vertices];
+    TestGraph(Vertex[] vertices) {
 
-        for (int i = 0; i < vertices; i++)
-            adjustedList[i] = new LinkedList();
+        adjustedList = new TestGraphElement[vertices.length];
+
+        for (int i = 0; i < vertices.length; i++) {
+            adjustedList[i] = new TestGraphElement(vertices[i]);
+        }
     }
 
-    public void addEdge(Vertex src, Vertex dest) {
-        adjustedList[src.getIdx()].add(dest);
+
+    void addEdge(Vertex src, Vertex dest) {
+        adjustedList[src.getIdx()].addNeighbour(dest);
     }
 }
