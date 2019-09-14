@@ -2,7 +2,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 //Just a pair
-public class TestGraphElement {
+public class TestGraphElement implements GraphElement {
     public Vertex getVertex() {
         return vertex;
     }
@@ -22,5 +22,16 @@ public class TestGraphElement {
 
     public void addNeighbour(Vertex neighbour) {
         neighbors.add(neighbour);
+    }
+
+    @Override
+    public int compareTo(GraphElement element) {
+        if(this.vertex.getIdx() == element.getVertex().getIdx()){
+            return 0;
+        } else if(this.vertex.getIdx() < element.getVertex().getIdx()){
+            return -1;
+        } else{
+            return 1;
+        }
     }
 }

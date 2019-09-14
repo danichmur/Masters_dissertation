@@ -53,37 +53,11 @@ public class Main {
 
     public static void main(String[] args) {
         TestGraph g = generateTestGraph();
-        TestGraphElement[] adjustedList = g.getAdjustedList();
 
-        SuperAdjustedList s = new SuperAdjustedList(adjustedList);
+        SuperAdjustedList s = new SuperAdjustedList(g.getAdjustedList());
 
-        int N = adjustedList.length;
-
-        DoublyLinkedList<Vertex>[] B = new DoublyLinkedList[N];
+        s.printlnArrays();
 
 
-        //TODO sort lists in A
-
-        //TODO find a better way
-        for (int i = 0; i < N; i++) {
-            B[i] = new DoublyLinkedList<>();
-        }
-
-        for (int i = 0; i < N; i++) {
-            List N_ai = adjustedList[i].getNeighbors();
-
-            int degV = N_ai.size();
-
-            for (int k = 0; k < degV; k++) {
-                Vertex J = (Vertex) N_ai.get(k);
-                DoublyLinkedList<Vertex> N_bi = B[J.getIdx()];
-                N_bi.addLast(adjustedList[i].getVertex());
-            }
-
-        }
-
-        for (int i = 0; i < B.length; i++) {
-            System.out.println(i + " " + B[i]);
-        }
     }
 }
