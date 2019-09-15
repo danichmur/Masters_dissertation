@@ -15,8 +15,8 @@ class TestGraph {
         }
     }
 
-
     void addEdge(Vertex src, Vertex dest) {
         adjustedList[src.getIdx()].addNeighbour(dest);
+        adjustedList[dest.getIdx()].addNeighbour(src);
     }
 }

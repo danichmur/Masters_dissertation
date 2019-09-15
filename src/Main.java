@@ -1,3 +1,4 @@
+import java.lang.reflect.Array;
 import java.util.*;
 
 public class Main {
@@ -10,6 +11,7 @@ public class Main {
     }
 
     static TestGraph generateTestGraph() {
+
         Vertex v1 = createVertex(0);
         Vertex v2 = createVertex(1);
         Vertex v3 = createVertex(2);
@@ -17,36 +19,34 @@ public class Main {
         Vertex v5 = createVertex(4);
         Vertex v6 = createVertex(5);
         Vertex v7 = createVertex(6);
+        Vertex v8 = createVertex(7);
 
-        Vertex[] vertices = {v1, v2, v3, v4, v5, v6, v7};
+        Vertex[] vertices = {v1, v2, v3, v4, v5, v6, v7, v8};
 
         TestGraph g = new TestGraph(vertices);
 
 
-        /*                  7
-                           / \
+        /*     8            7
+              / \          / \
             1 -- 2 ----- 5 -- 6
             \   /            /
              \ /            /
               3 ---------- 4
         */
 
+
         g.addEdge(v1, v2);
         g.addEdge(v1, v3);
-        g.addEdge(v2, v1);
-        g.addEdge(v2, v3);
         g.addEdge(v2, v5);
-        g.addEdge(v3, v1);
         g.addEdge(v3, v2);
         g.addEdge(v3, v4);
-        g.addEdge(v4, v3);
-        g.addEdge(v4, v6);
-        g.addEdge(v5, v2);
         g.addEdge(v5, v6);
         g.addEdge(v6, v4);
-        g.addEdge(v6, v5);
+        g.addEdge(v7, v5);
         g.addEdge(v7, v6);
-        g.addEdge(v7, v7);
+
+        g.addEdge(v8, v1);
+        g.addEdge(v8, v2);
 
         return g;
     }
@@ -57,7 +57,7 @@ public class Main {
         SuperAdjustedList s = new SuperAdjustedList(g.getAdjustedList());
 
         s.printlnArrays();
-
+        System.out.println(s.getNeighborsFromComplementGraph(createVertex(4)));
 
     }
 }

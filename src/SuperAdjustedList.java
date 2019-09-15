@@ -1,24 +1,61 @@
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class SuperAdjustedList {
     private Vertex[][] Ms;
+    private List<VertexWithMarker>[] M2; //TODO
     private List<Vertex>[] Ls;
     private DoublyLinkedList[] B;
     private final int SORTED_SIZE = 20;
 
     public SuperAdjustedList(GraphElement[] adjustedList) {
-        GraphElement[] sortedList =  bucketSort(adjustedList, SORTED_SIZE);
+        //bucketSort(adjustedList, SORTED_SIZE);
         fillML(adjustedList);
         fillB(adjustedList);
+        fillM2(adjustedList);
+    }
+
+    private void fillM2(GraphElement[] adjustedList) {
+        int N = Ls.length;
+        M2 = new List[N];
+
+        //TODO find a better way
+        for (int i = 0; i < N; i++) {
+            M2[i] = new ArrayList<>();
+        }
+
+        for (int i = 0; i < N; i++) {
+
+            for (int j = 0; j + 2 < Ls[i].size(); j++){
+                Vertex v1 = Ls[i].get(j);
+                Vertex v2 = Ls[i].get(j + 1);
+                Vertex v3 = Ls[i].get(j + 2);
+
+                if (v1.getIdx() + 1 < v2.getIdx() && v2.getIdx() < v3.getIdx() - 1) {
+                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() - 1].getVertex(), -1));
+                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() + 1].getVertex(), 1));
+                    j += 3;
+                } else if (v1.getIdx() + 1 < v2.getIdx() && v2.getIdx() == v3.getIdx() - 1) {
+                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() - 1].getVertex(), -1));
+                    j += 3;
+                } else if (v1.getIdx() + 1 == v2.getIdx() && v2.getIdx() < v3.getIdx() - 1) {
+                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() + 1].getVertex(), 1));
+                    j += 3;
+                } else if (v1.getIdx() + 1 == v2.getIdx() && v2.getIdx() == v3.getIdx() - 1) {
+                    //TODO
+                }
+            }
+
+            M2[i].add(0, new VertexWithMarker(new Vertex(0, "", null), 1));
+            M2[i].add(new VertexWithMarker(new Vertex(N + 1, "", null), -1));
+        }
     }
 
     private void fillML(GraphElement[] adjustedList) {
         int N = adjustedList.length;
         //M and L for each vertex
         Ms = new Vertex[N][N];
+
         Ls = new List[N];
 
         // all vertices
@@ -55,6 +92,25 @@ public class SuperAdjustedList {
         return Ms[v1.getIdx()][v2.getIdx()] != null;
     }
 
+    public List<Integer> getNeighborsFromComplementGraph(Vertex v) {
+        List<VertexWithMarker> list = M2[v.getIdx()];
+        List<Integer> neighbors =  new ArrayList<>();
+        System.out.println(list);
+        for (int i = 0; i < list.size() - 1; i++) {
+            VertexWithMarker vm1 = list.get(i);
+            VertexWithMarker vm2 = list.get(i + 1);
+            if (vm1.marker == 1 && vm2.marker == -1) {
+                for (int j = vm1.v.getIdx(); j < vm2.v.getIdx() + 1; j ++) {
+                    neighbors.add(j);
+                }
+            }
+        }
+        //neighbors.remove(0);
+        neighbors.remove(neighbors.size() - 1);
+        neighbors = neighbors.stream().distinct().collect(Collectors.toList());
+        return neighbors;
+    }
+
     //TODO remove
     void printlnArrays() {
         System.out.println("Ms");
@@ -69,9 +125,13 @@ public class SuperAdjustedList {
         for (int i = 0; i < B.length; i++) {
             System.out.println(i + " " + B[i]);
         }
+        System.out.println("M2");
+        for (int i = 0; i < M2.length; i++) {
+            System.out.println(i + " " + M2[i]);
+        }
     }
 
-    private GraphElement[] bucketSort(GraphElement[] intArr, int noOfBuckets){
+    private void bucketSort(GraphElement[] intArr, int noOfBuckets){
         List<GraphElement>[] buckets = new List[noOfBuckets];
 
         for(int i = 0; i < noOfBuckets; i++){
@@ -93,13 +153,26 @@ public class SuperAdjustedList {
                 intArr[i++] = num;
             }
         }
-
-        return intArr;
     }
 
     // TODO
     // A very simple hash function
     private int hash(int num) {
-        return num / SORTED_SIZE;
+        return num;
+    }
+
+    private class VertexWithMarker {
+        Vertex v;
+        int marker; // 1, -1
+
+        VertexWithMarker(Vertex v, int marker) {
+            this.v = v;
+            this.marker = marker;
+        }
+
+        @Override
+        public String toString() {
+            return "(" + v.getIdx() + ", " + marker + ")";
+        }
     }
 }
