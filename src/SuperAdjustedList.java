@@ -25,29 +25,39 @@ public class SuperAdjustedList {
         }
 
         for (int i = 0; i < N; i++) {
+            if (Ls[i].size() == 0) {
+                continue;
+            }
+            List<Vertex> currentL = new ArrayList<>(Ls[i]);
+            Vertex fakeFirst = new Vertex(0, "", null);
+            //TODO: +2?
+            Vertex fakeLast = new Vertex(Ls[i].get(Ls[i].size() - 1).getIdx() + 2, "", null);
 
-            for (int j = 0; j + 2 < Ls[i].size(); j++){
-                Vertex v1 = Ls[i].get(j);
-                Vertex v2 = Ls[i].get(j + 1);
-                Vertex v3 = Ls[i].get(j + 2);
+            currentL.add(0, fakeFirst);
+            currentL.add(fakeLast);
 
-                if (v1.getIdx() + 1 < v2.getIdx() && v2.getIdx() < v3.getIdx() - 1) {
-                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() - 1].getVertex(), -1));
-                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() + 1].getVertex(), 1));
-                    j += 3;
-                } else if (v1.getIdx() + 1 < v2.getIdx() && v2.getIdx() == v3.getIdx() - 1) {
-                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() - 1].getVertex(), -1));
-                    j += 3;
-                } else if (v1.getIdx() + 1 == v2.getIdx() && v2.getIdx() < v3.getIdx() - 1) {
-                    M2[i].add(new VertexWithMarker(adjustedList[v2.getIdx() + 1].getVertex(), 1));
-                    j += 3;
-                } else if (v1.getIdx() + 1 == v2.getIdx() && v2.getIdx() == v3.getIdx() - 1) {
-                    //TODO
+            for (int j = 1; j + 1 < currentL.size(); j++){
+                Vertex v = currentL.get(j);
+
+                int iIdx = currentL.get(j - 1).getIdx();
+                int jIdx = v.getIdx();
+                int kIdx = currentL.get(j + 1).getIdx();
+
+                if (iIdx + 1 < jIdx && jIdx < kIdx - 1) {
+                    M2[i].add(new VertexWithMarker(adjustedList[jIdx - 1].getVertex(), -1));
+                    M2[i].add(new VertexWithMarker(adjustedList[jIdx + 1].getVertex(), 1));
+                } else if (iIdx + 1 < jIdx && jIdx == kIdx - 1) {
+                    M2[i].add(new VertexWithMarker(adjustedList[jIdx - 1].getVertex(), -1));
+                } else if (iIdx + 1 == jIdx && jIdx < kIdx - 1) {
+                    M2[i].add(new VertexWithMarker(adjustedList[jIdx + 1].getVertex(), 1));
                 }
+//                else if (iIdx + 1 == jIdx && jIdx == kIdx - 1) {
+//                    //TODO ?
+//                }
             }
 
-            M2[i].add(0, new VertexWithMarker(new Vertex(0, "", null), 1));
-            M2[i].add(new VertexWithMarker(new Vertex(N + 1, "", null), -1));
+            M2[i].add(0, new VertexWithMarker(fakeFirst, 1));
+            M2[i].add(new VertexWithMarker(fakeLast, -1));
         }
     }
 
@@ -95,7 +105,6 @@ public class SuperAdjustedList {
     public List<Integer> getNeighborsFromComplementGraph(Vertex v) {
         List<VertexWithMarker> list = M2[v.getIdx()];
         List<Integer> neighbors =  new ArrayList<>();
-        System.out.println(list);
         for (int i = 0; i < list.size() - 1; i++) {
             VertexWithMarker vm1 = list.get(i);
             VertexWithMarker vm2 = list.get(i + 1);

@@ -20,8 +20,11 @@ public class Main {
         Vertex v6 = createVertex(5);
         Vertex v7 = createVertex(6);
         Vertex v8 = createVertex(7);
+        Vertex v9 = createVertex(8);
+        Vertex v10 = createVertex(9);
+        Vertex v11 = createVertex(10);
 
-        Vertex[] vertices = {v1, v2, v3, v4, v5, v6, v7, v8};
+        Vertex[] vertices = {v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11};
 
         TestGraph g = new TestGraph(vertices);
 
@@ -57,7 +60,7 @@ public class Main {
         SuperAdjustedList s = new SuperAdjustedList(g.getAdjustedList());
 
         s.printlnArrays();
-        System.out.println(s.getNeighborsFromComplementGraph(createVertex(4)));
+        System.out.println(s.getNeighborsFromComplementGraph(createVertex(0)));
 
     }
 }
