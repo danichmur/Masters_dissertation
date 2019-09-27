@@ -23,8 +23,9 @@ public class Main {
         Vertex v9 = createVertex(8);
         Vertex v10 = createVertex(9);
         Vertex v11 = createVertex(10);
+        Vertex v12 = createVertex(11);
 
-        Vertex[] vertices = {v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11};
+        Vertex[] vertices = {v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12};
 
         TestGraph g = new TestGraph(vertices);
 
@@ -51,16 +52,47 @@ public class Main {
         g.addEdge(v8, v1);
         g.addEdge(v8, v2);
 
+        g.addEdge(v11, v1);
+        g.addEdge(v11, v6);
+        g.addEdge(v11, v8);
+        g.addEdge(v11, v9);
+
+        return g;
+
+    }
+
+    static TestGraph generateTestGraph2() {
+        Vertex v1 = createVertex(0);
+        Vertex v2 = createVertex(1);
+        Vertex v3 = createVertex(2);
+        Vertex v4 = createVertex(3);
+
+        Vertex[] vertices = {v1, v2, v3, v4};
+
+        TestGraph g = new TestGraph(vertices);
+
+        /*
+            1 -- 2 -- 4
+            \   /
+             \ /
+              3
+        */
+
+        g.addEdge(v1, v2);
+        g.addEdge(v2, v3);
+        g.addEdge(v1, v3);
+        g.addEdge(v2, v4);
+
         return g;
     }
 
     public static void main(String[] args) {
-        TestGraph g = generateTestGraph();
+        TestGraph g = generateTestGraph2();
 
         SuperAdjustedList s = new SuperAdjustedList(g.getAdjustedList());
 
-        s.printlnArrays();
-        System.out.println(s.getNeighborsFromComplementGraph(createVertex(0)));
+      //  s.printlnArrays();
+      //  System.out.println(s.getNeighborsFromComplementGraph(createVertex(10)));
 
     }
 }

@@ -1,4 +1,5 @@
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 //Just a pair
@@ -17,7 +18,7 @@ public class TestGraphElement implements GraphElement {
 
     public TestGraphElement(Vertex vertex) {
         this.vertex = vertex;
-        neighbors = new ArrayList();
+        neighbors = new LinkedList<>();
     }
 
     public void addNeighbour(Vertex neighbour) {

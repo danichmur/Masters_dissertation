@@ -9,55 +9,59 @@ public class SuperAdjustedList {
     private final int SORTED_SIZE = 20;
 
     public SuperAdjustedList(GraphElement[] adjustedList) {
-        //bucketSort(adjustedList, SORTED_SIZE);
         fillML(adjustedList);
-        fillB(adjustedList);
+        //bucketSort(Ls, SORTED_SIZE);
+
+        fillDoublyLinkedListB(adjustedList);
         fillM2(adjustedList);
+        fillB();
     }
 
     private void fillM2(GraphElement[] adjustedList) {
         int N = Ls.length;
         M2 = new List[N];
 
-        //TODO find a better way
-        for (int i = 0; i < N; i++) {
-            M2[i] = new ArrayList<>();
-        }
+        VertexWithMarker fakeFirst = new VertexWithMarker(0, 1);
+        VertexWithMarker fakeLast = new VertexWithMarker(N, -1);
+
 
         for (int i = 0; i < N; i++) {
+            //TODO review
+            M2[i] = new ArrayList<>(N + 2);
             if (Ls[i].size() == 0) {
                 continue;
             }
-            List<Vertex> currentL = new ArrayList<>(Ls[i]);
-            Vertex fakeFirst = new Vertex(0, "", null);
-            //TODO: +2?
-            Vertex fakeLast = new Vertex(Ls[i].get(Ls[i].size() - 1).getIdx() + 2, "", null);
 
-            currentL.add(0, fakeFirst);
-            currentL.add(fakeLast);
 
-            for (int j = 1; j + 1 < currentL.size(); j++){
-                Vertex v = currentL.get(j);
+            for (int j = 0; j < Ls[i].size(); j++) {
+                Vertex v = Ls[i].get(j); //TODO
 
-                int iIdx = currentL.get(j - 1).getIdx();
+                int iIdx = -1;
+
+                if(j > 0){
+                    iIdx = Ls[i].get(j - 1).getIdx();
+                }
+
                 int jIdx = v.getIdx();
-                int kIdx = currentL.get(j + 1).getIdx();
+
+                int kIdx = N ;
+
+                if (j != Ls[i].size() - 1) {
+                    kIdx = Ls[i].get(j + 1).getIdx();
+                }
 
                 if (iIdx + 1 < jIdx && jIdx < kIdx - 1) {
-                    M2[i].add(new VertexWithMarker(adjustedList[jIdx - 1].getVertex(), -1));
-                    M2[i].add(new VertexWithMarker(adjustedList[jIdx + 1].getVertex(), 1));
+                    M2[i].add(new VertexWithMarker(jIdx - 1, -1));
+                    M2[i].add(new VertexWithMarker(jIdx + 1, 1));
                 } else if (iIdx + 1 < jIdx && jIdx == kIdx - 1) {
-                    M2[i].add(new VertexWithMarker(adjustedList[jIdx - 1].getVertex(), -1));
+                    M2[i].add(new VertexWithMarker(jIdx - 1, -1));
                 } else if (iIdx + 1 == jIdx && jIdx < kIdx - 1) {
-                    M2[i].add(new VertexWithMarker(adjustedList[jIdx + 1].getVertex(), 1));
+                    M2[i].add(new VertexWithMarker(jIdx + 1, 1));
                 }
-//                else if (iIdx + 1 == jIdx && jIdx == kIdx - 1) {
-//                    //TODO ?
-//                }
             }
 
-            M2[i].add(0, new VertexWithMarker(fakeFirst, 1));
-            M2[i].add(new VertexWithMarker(fakeLast, -1));
+            M2[i].add(0, fakeFirst);
+            M2[i].add(fakeLast);
         }
     }
 
@@ -79,7 +83,7 @@ public class SuperAdjustedList {
         }
     }
 
-    private void fillB(GraphElement[] adjustedList) {
+    private void fillDoublyLinkedListB(GraphElement[] adjustedList) {
         int N = adjustedList.length;
 
         B = new DoublyLinkedList[N];
@@ -104,19 +108,24 @@ public class SuperAdjustedList {
 
     public List<Integer> getNeighborsFromComplementGraph(Vertex v) {
         List<VertexWithMarker> list = M2[v.getIdx()];
-        List<Integer> neighbors =  new ArrayList<>();
+        List<Integer> neighbors = new ArrayList<>(Ms.length);
         for (int i = 0; i < list.size() - 1; i++) {
             VertexWithMarker vm1 = list.get(i);
             VertexWithMarker vm2 = list.get(i + 1);
             if (vm1.marker == 1 && vm2.marker == -1) {
-                for (int j = vm1.v.getIdx(); j < vm2.v.getIdx() + 1; j ++) {
+                for (int j = vm1.v; j < vm2.v + 1; j++) {
                     neighbors.add(j);
                 }
+            }else{
+                neighbors.add(i);
+
             }
         }
-        //neighbors.remove(0);
-        neighbors.remove(neighbors.size() - 1);
         neighbors = neighbors.stream().distinct().collect(Collectors.toList());
+
+        neighbors.remove(0);
+        neighbors.remove(neighbors.size() - 1);
+
         return neighbors;
     }
 
@@ -140,29 +149,111 @@ public class SuperAdjustedList {
         }
     }
 
-    private void bucketSort(GraphElement[] intArr, int noOfBuckets){
+    private void bucketSort(GraphElement[] intArr, int noOfBuckets) {
         List<GraphElement>[] buckets = new List[noOfBuckets];
 
-        for(int i = 0; i < noOfBuckets; i++){
+        for (int i = 0; i < noOfBuckets; i++) {
             buckets[i] = new LinkedList<>();
         }
 
-        for(GraphElement num : intArr){
+        for (GraphElement num : intArr) {
             buckets[hash(num.getVertex().getIdx())].add(num);
         }
 
-        for(List<GraphElement> bucket : buckets){
+        for (List<GraphElement> bucket : buckets) {
             Collections.sort(bucket);
         }
 
         int i = 0;
 
-        for(List<GraphElement> bucket : buckets){
-            for(GraphElement num : bucket){
+        for (List<GraphElement> bucket : buckets) {
+            for (GraphElement num : bucket) {
                 intArr[i++] = num;
             }
         }
     }
+
+
+    private void fillB(){
+
+        final int N = Ls.length;
+
+        ElementForB[][] B = new ElementForB[N][N];
+        HeaderN[] nHorizontal = new HeaderN[N];
+        HeaderN[] nVertical = new HeaderN[N];
+
+        for (int i = 0; i  < N; i++) {
+            List<Vertex> lsi = Ls[i];
+
+            nHorizontal[i] = new HeaderN(N);
+            nVertical[i] = new HeaderN(N);
+
+            ElementForB bPrevious = null;
+
+            for (Vertex v : lsi) {
+
+                int j = v.getIdx();
+
+                ElementForB bHorizontal = new ElementForB(i, j);
+
+                if (i > j) {
+                    bPrevious = bHorizontal;
+                    //The matrix is symmetrical, so there is no need to check fill i > j cases
+                    continue;
+                }
+
+                ElementForB bVertical = new ElementForB(j, i);
+
+                if (bPrevious == null) {
+
+                    //TODO
+                    //link first with start
+
+                } else {
+                    ElementForB bPreviousReverse = B[bPrevious.getVerticalW()][bPrevious.getHorizontalW()];
+
+                    bHorizontal.setLeft(bPrevious);
+                    bPrevious.setRight(bHorizontal);
+//                    bVertical.setLeft(bPreviousReverse);
+//                    bPreviousReverse.setRight(bVertical);
+
+
+                    bVertical.setUp(bPreviousReverse);
+                    bPreviousReverse.setDown(bVertical);
+//                    bHorizontal.setUp(bPrevious);
+//                    bPrevious.setDown(bHorizontal);
+
+                }
+                
+                B[i][j] = bHorizontal;
+                B[j][i] = bVertical;
+
+                System.out.println("{left, right, up, down}");
+                for(int i1 = 0; i1  < Ls.length; i1++){
+                    for(int j1 = 0; j1  < Ls.length; j1++){
+                        System.out.printf("%-50s ", B[i1][j1]);
+                    }
+                    System.out.println();
+                }
+                System.out.println();
+                System.out.println();
+                System.out.println();
+                System.out.println();
+
+                bPrevious = bHorizontal;
+            }
+        }
+
+        System.out.println("{left, right, up, down}");
+        for(int i = 0; i  < Ls.length; i++){
+            for(int j = 0; j  < Ls.length; j++){
+                System.out.printf("%-50s ", B[i][j]);
+            }
+            System.out.println();
+        }
+    }
+
+
 
     // TODO
     // A very simple hash function
@@ -171,17 +262,17 @@ public class SuperAdjustedList {
     }
 
     private class VertexWithMarker {
-        Vertex v;
+        int v;
         int marker; // 1, -1
 
-        VertexWithMarker(Vertex v, int marker) {
+        VertexWithMarker(int v, int marker) {
             this.v = v;
             this.marker = marker;
         }
 
         @Override
         public String toString() {
-            return "(" + v.getIdx() + ", " + marker + ")";
+            return "(" + v + ", " + marker + ")";
         }
     }
 }
