@@ -5,14 +5,16 @@ public class SuperAdjustedList {
     private Vertex[][] Ms;
     private List<VertexWithMarker>[] M2; //TODO
     private List<Vertex>[] Ls;
-    private DoublyLinkedList[] B;
+    //private DoublyLinkedList[] B;
+    private ElementForB[][] B;
+
     private final int SORTED_SIZE = 20;
 
     public SuperAdjustedList(GraphElement[] adjustedList) {
         fillML(adjustedList);
         //bucketSort(Ls, SORTED_SIZE);
 
-        fillDoublyLinkedListB(adjustedList);
+        //fillDoublyLinkedListB(adjustedList);
         fillM2(adjustedList);
         fillB();
     }
@@ -83,24 +85,24 @@ public class SuperAdjustedList {
         }
     }
 
-    private void fillDoublyLinkedListB(GraphElement[] adjustedList) {
-        int N = adjustedList.length;
-
-        B = new DoublyLinkedList[N];
-
-        //TODO find a better way
-        for (int i = 0; i < N; i++) {
-            B[i] = new DoublyLinkedList<>();
-        }
-
-        for (GraphElement e : adjustedList) {
-            List<Vertex> N_ai = e.getNeighbors();
-            for (Vertex j : N_ai) {
-                B[j.getIdx()].addLast(e.getVertex());
-            }
-
-        }
-    }
+//    private void fillDoublyLinkedListB(GraphElement[] adjustedList) {
+//        int N = adjustedList.length;
+//
+//        B = new DoublyLinkedList[N];
+//
+//        //TODO find a better way
+//        for (int i = 0; i < N; i++) {
+//            B[i] = new DoublyLinkedList<>();
+//        }
+//
+//        for (GraphElement e : adjustedList) {
+//            List<Vertex> N_ai = e.getNeighbors();
+//            for (Vertex j : N_ai) {
+//                B[j.getIdx()].addLast(e.getVertex());
+//            }
+//
+//        }
+//    }
 
     public boolean isAdjusted(Vertex v1, Vertex v2) {
         return Ms[v1.getIdx()][v2.getIdx()] != null;
@@ -147,102 +149,101 @@ public class SuperAdjustedList {
         for (int i = 0; i < M2.length; i++) {
             System.out.println(i + " " + M2[i]);
         }
-    }
-
-    private void bucketSort(GraphElement[] intArr, int noOfBuckets) {
-        List<GraphElement>[] buckets = new List[noOfBuckets];
-
-        for (int i = 0; i < noOfBuckets; i++) {
-            buckets[i] = new LinkedList<>();
-        }
-
-        for (GraphElement num : intArr) {
-            buckets[hash(num.getVertex().getIdx())].add(num);
-        }
-
-        for (List<GraphElement> bucket : buckets) {
-            Collections.sort(bucket);
-        }
-
-        int i = 0;
-
-        for (List<GraphElement> bucket : buckets) {
-            for (GraphElement num : bucket) {
-                intArr[i++] = num;
+        System.out.println("{left, right, up, down}");
+        for(int i = 0; i  < Ls.length; i++){
+            for(int j = 0; j  < Ls.length; j++){
+                System.out.printf("%-50s ", B[i][j]);
             }
+            System.out.println();
         }
     }
 
+//    private void bucketSort(GraphElement[] intArr, int noOfBuckets) {
+//        List<GraphElement>[] buckets = new List[noOfBuckets];
+//
+//        for (int i = 0; i < noOfBuckets; i++) {
+//            buckets[i] = new LinkedList<>();
+//        }
+//
+//        for (GraphElement num : intArr) {
+//            buckets[hash(num.getVertex().getIdx())].add(num);
+//        }
+//
+//        for (List<GraphElement> bucket : buckets) {
+//            Collections.sort(bucket);
+//        }
+//
+//        int i = 0;
+//
+//        for (List<GraphElement> bucket : buckets) {
+//            for (GraphElement num : bucket) {
+//                intArr[i++] = num;
+//            }
+//        }
+//    }
+
+//    private int hash(int num) {
+//        return num;
+//    }
+
+
+    private ElementForB getOrCreateElementForB(int i, int j) {
+        ElementForB b;
+        if (B[i][j] == null) {
+            b = new ElementForB(i, j);
+        } else {
+            b = B[i][j];
+        }
+        return b;
+    }
 
     private void fillB(){
-
         final int N = Ls.length;
 
-        ElementForB[][] B = new ElementForB[N][N];
+        B = new ElementForB[N][N];
         HeaderN[] nHorizontal = new HeaderN[N];
         HeaderN[] nVertical = new HeaderN[N];
 
         for (int i = 0; i  < N; i++) {
+            //TODO lsi HAVE TO BE SORTED
             List<Vertex> lsi = Ls[i];
 
             nHorizontal[i] = new HeaderN(N);
             nVertical[i] = new HeaderN(N);
 
-            ElementForB bPrevious = null;
+            ElementForB bPreviousHorizontal = null;
+            ElementForB bPreviousVertical = null;
 
             for (Vertex v : lsi) {
-
                 int j = v.getIdx();
 
-                ElementForB bHorizontal = new ElementForB(i, j);
-
                 if (i > j) {
-                    bPrevious = bHorizontal;
                     //The matrix is symmetrical, so there is no need to check fill i > j cases
                     continue;
                 }
 
-                ElementForB bVertical = new ElementForB(j, i);
+                ElementForB bHorizontal = getOrCreateElementForB(i, j);
+                ElementForB bVertical = getOrCreateElementForB(j, i);
 
-                if (bPrevious == null) {
-
-                    //TODO
-                    //link first with start
-
+                if (bPreviousVertical == null || bPreviousHorizontal == null) {
+                    //TODO link first with start
                 } else {
-                    ElementForB bPreviousReverse = B[bPrevious.getVerticalW()][bPrevious.getHorizontalW()];
+                    bHorizontal.setLeft(bPreviousHorizontal);
+                    bPreviousHorizontal.setRight(bHorizontal);
 
-                    bHorizontal.setLeft(bPrevious);
-                    bPrevious.setRight(bHorizontal);
-//                    bVertical.setLeft(bPreviousReverse);
-//                    bPreviousReverse.setRight(bVertical);
-
-
-                    bVertical.setUp(bPreviousReverse);
-                    bPreviousReverse.setDown(bVertical);
-//                    bHorizontal.setUp(bPrevious);
-//                    bPrevious.setDown(bHorizontal);
-
+                    bVertical.setUp(bPreviousVertical);
+                    bPreviousVertical.setDown(bVertical);
                 }
-                
+
                 B[i][j] = bHorizontal;
+                bPreviousHorizontal = bHorizontal;
+
                 B[j][i] = bVertical;
-
-                System.out.println("{left, right, up, down}");
-                for(int i1 = 0; i1  < Ls.length; i1++){
-                    for(int j1 = 0; j1  < Ls.length; j1++){
-                        System.out.printf("%-50s ", B[i1][j1]);
-                    }
-                    System.out.println();
-                }
-                System.out.println();
-                System.out.println();
-                System.out.println();
-                System.out.println();
-
-                bPrevious = bHorizontal;
+                bPreviousVertical = bVertical;
             }
         }
+
+        UnitTest();
 
         System.out.println("{left, right, up, down}");
         for(int i = 0; i  < Ls.length; i++){
@@ -254,11 +255,16 @@ public class SuperAdjustedList {
     }
 
 
-
-    // TODO
-    // A very simple hash function
-    private int hash(int num) {
-        return num;
+    private void UnitTest() {
+        //this is the right B for generateTestGraph2
+        String rightBStr = "null1 2 {null, 1 3, null, 3 2}1 3 {1 2, null, null, 2 3}null2 1 {null, 2 3, null, 3 1}null2 3 {2 1, 2 4, 1 3, null}2 4 {2 3, null, null, null}3 1 {null, 3 2, 2 1, null}3 2 {3 1, null, 1 2, 4 2}nullnullnull4 2 {null, null, 3 2, null}nullnull";
+        StringBuilder s = new StringBuilder();
+        for(int i = 0; i  < Ls.length; i++){
+            for(int j = 0; j  < Ls.length; j++){
+                s.append(B[i][j]);
+            }
+        }
+        System.out.println(rightBStr.equals(s.toString()));
     }
 
     private class VertexWithMarker {

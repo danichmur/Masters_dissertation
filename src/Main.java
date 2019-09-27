@@ -79,8 +79,8 @@ public class Main {
         */
 
         g.addEdge(v1, v2);
-        g.addEdge(v2, v3);
         g.addEdge(v1, v3);
+        g.addEdge(v2, v3);
         g.addEdge(v2, v4);
 
         return g;
@@ -93,6 +93,5 @@ public class Main {
 
       //  s.printlnArrays();
       //  System.out.println(s.getNeighborsFromComplementGraph(createVertex(10)));
-
     }
 }
