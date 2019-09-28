@@ -201,32 +201,31 @@ public class SuperAdjustedList {
         final int N = Ls.length;
 
         B = new ElementForB[N][N];
-        HeaderN[] nHorizontal = new HeaderN[N];
-        HeaderN[] nVertical = new HeaderN[N];
+        ElementForB[] nHorizontal = new ElementForB[N];
+        ElementForB[] nVertical = new ElementForB[N];
 
         for (int i = 0; i  < N; i++) {
             //TODO lsi HAVE TO BE SORTED
             List<Vertex> lsi = Ls[i];
-
-            nHorizontal[i] = new HeaderN(N);
-            nVertical[i] = new HeaderN(N);
 
             ElementForB bPreviousHorizontal = null;
             ElementForB bPreviousVertical = null;
 
             for (Vertex v : lsi) {
                 int j = v.getIdx();
-
-                if (i > j) {
-                    //The matrix is symmetrical, so there is no need to check fill i > j cases
-                    continue;
-                }
+                // TODO ?
+//                if (i > j) {
+//                    //The matrix is symmetrical, so there is no need to fill i > j cases
+//                    continue;
+//                }
 
                 ElementForB bHorizontal = getOrCreateElementForB(i, j);
                 ElementForB bVertical = getOrCreateElementForB(j, i);
 
                 if (bPreviousVertical == null || bPreviousHorizontal == null) {
-                    //TODO link first with start
+                    //link first with start
+                    nHorizontal[i] = bHorizontal;
+                    nVertical[i] = bVertical;
                 } else {
                     bHorizontal.setLeft(bPreviousHorizontal);
                     bPreviousHorizontal.setRight(bHorizontal);
@@ -253,7 +252,6 @@ public class SuperAdjustedList {
             System.out.println();
         }
     }
-
 
     private void UnitTest() {
         //this is the right B for generateTestGraph2
