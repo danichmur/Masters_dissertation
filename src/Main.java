@@ -90,8 +90,5 @@ public class Main {
         TestGraph g = generateTestGraph2();
 
         SuperAdjustedList s = new SuperAdjustedList(g.getAdjustedList());
-
-      //  s.printlnArrays();
-      //  System.out.println(s.getNeighborsFromComplementGraph(createVertex(10)));
     }
 }
