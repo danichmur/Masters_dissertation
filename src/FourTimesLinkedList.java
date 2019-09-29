@@ -1,14 +1,14 @@
-import java.util.Comparator;
+import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 
 public class FourTimesLinkedList {
 
     private Node[] nHorizontal;
     private Node[] nVertical;
 
-    //TODO List<Set<Integer>>
-    public FourTimesLinkedList(List<Vertex>[] Ls) {
-        buildList(Ls);
+    public FourTimesLinkedList(List<Set<Integer>> adjacencyList) {
+        buildList(adjacencyList);
     }
 
     private Node getOrCreateElementForB(Node[][] B, int i, int j) {
@@ -22,22 +22,21 @@ public class FourTimesLinkedList {
     }
 
 
-    private void buildList(List<Vertex>[] Ls) {
-        final int N = Ls.length;
+    private void buildList(List<Set<Integer>>  adjacencyList) {
+        final int N = adjacencyList.size();
 
         Node[][] B = new Node[N][N];
         nHorizontal = new Node[N];
         nVertical = new Node[N];
 
         for (int i = 0; i < N; i++) {
-            List<Vertex> lsi = Ls[i];
-            //TODO lsi HAVE TO BE SORTED
-            lsi.sort(Comparator.comparingInt(Vertex::getIdx));
+            //TODO The neighbors MUST BE SORTED
+            Set<Integer> neighbors = adjacencyList.get(i);
+
             Node bPreviousHorizontal = null;
             Node bPreviousVertical = null;
 
-            for (Vertex v : lsi) {
-                int j = v.getIdx();
+            for (int j : neighbors) {
 
                 Node bHorizontal = getOrCreateElementForB(B, i, j);
                 Node bVertical = getOrCreateElementForB(B, j, i);
@@ -61,8 +60,6 @@ public class FourTimesLinkedList {
                 bPreviousVertical = bVertical;
             }
         }
-        UnitTest(B);
-
     }
 
     //TODO remove
@@ -90,19 +87,6 @@ public class FourTimesLinkedList {
             }
             System.out.println();
         }
-    }
-
-    //TODO remove
-    private void UnitTest(Node[][] B) {
-        //this is the right B for generateTestGraph2
-        String rightBStr = "null1 2 {null, 1 3, null, 3 2}1 3 {1 2, null, null, 2 3}null2 1 {null, 2 3, null, 3 1}null2 3 {2 1, 2 4, 1 3, null}2 4 {2 3, null, null, null}3 1 {null, 3 2, 2 1, null}3 2 {3 1, null, 1 2, 4 2}nullnullnull4 2 {null, null, 3 2, null}nullnull";
-        StringBuilder s = new StringBuilder();
-        for (int i = 0; i < B.length; i++) {
-            for (int j = 0; j < B.length; j++) {
-                s.append(B[i][j]);
-            }
-        }
-        System.out.println(rightBStr.equals(s.toString()));
     }
 
     private class Node {

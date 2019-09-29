@@ -1,33 +1,31 @@
-import java.lang.reflect.Array;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 public class Main {
 
-    // TEST data
-    private static  int[] intervals = {0, 2};
 
-    static Vertex createVertex(int idx) {
-        return new Vertex(idx, "KHD", intervals);
+    public static void main(String[] args) {
+        TestGraph g = generateTestGraph2();
+
+        SuperAdjustedList s = new SuperAdjustedList(g.getAdjustedList());
     }
 
     static TestGraph generateTestGraph() {
 
-        Vertex v1 = createVertex(0);
-        Vertex v2 = createVertex(1);
-        Vertex v3 = createVertex(2);
-        Vertex v4 = createVertex(3);
-        Vertex v5 = createVertex(4);
-        Vertex v6 = createVertex(5);
-        Vertex v7 = createVertex(6);
-        Vertex v8 = createVertex(7);
-        Vertex v9 = createVertex(8);
-        Vertex v10 = createVertex(9);
-        Vertex v11 = createVertex(10);
-        Vertex v12 = createVertex(11);
+        int v1 = 0;
+        int v2 = 1;
+        int v3 = 2;
+        int v4 = 3;
+        int v5 = 4;
+        int v6 = 6;
+        int v7 = 7;
+        int v8 = 8;
 
-        Vertex[] vertices = {v1, v2, v3, v4, v5, v6, v7, v8, v9, v10, v11, v12};
+        int[] vertices = {v1, v2, v3, v4, v5, v6, v7, v8};
 
-        TestGraph g = new TestGraph(vertices);
+        TestGraph g = new TestGraph(vertices.length);
 
 
         /*     8            7
@@ -52,24 +50,19 @@ public class Main {
         g.addEdge(v8, v1);
         g.addEdge(v8, v2);
 
-        g.addEdge(v11, v1);
-        g.addEdge(v11, v6);
-        g.addEdge(v11, v8);
-        g.addEdge(v11, v9);
-
         return g;
 
     }
 
     static TestGraph generateTestGraph2() {
-        Vertex v1 = createVertex(0);
-        Vertex v2 = createVertex(1);
-        Vertex v3 = createVertex(2);
-        Vertex v4 = createVertex(3);
+        int v1 = 0;
+        int v2 = 1;
+        int v3 = 2;
+        int v4 = 3;
 
-        Vertex[] vertices = {v1, v2, v3, v4};
+        int[] vertices = {v1, v2, v3, v4};
 
-        TestGraph g = new TestGraph(vertices);
+        TestGraph g = new TestGraph(vertices.length);
 
         /*
             1 -- 2 -- 4
@@ -86,9 +79,26 @@ public class Main {
         return g;
     }
 
-    public static void main(String[] args) {
-        TestGraph g = generateTestGraph2();
+    static class TestGraph {
 
-        SuperAdjustedList s = new SuperAdjustedList(g.getAdjustedList());
+        private List<Set<Integer>> adjacencyList;
+
+        List<Set<Integer>> getAdjustedList() {
+            return adjacencyList;
+        }
+
+        TestGraph(int verticesCount) {
+
+            adjacencyList = new ArrayList();
+
+            for (int i = 0; i < verticesCount; i++) {
+                adjacencyList.add(new HashSet());
+            }
+        }
+
+        void addEdge(int i, int j) {
+            adjacencyList.get(i).add(j);
+            adjacencyList.get(j).add(i);
+        }
     }
 }
