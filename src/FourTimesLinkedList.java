@@ -62,6 +62,25 @@ public class FourTimesLinkedList {
         }
     }
 
+    public void removeIncomingEdges(int v) {
+        Node n = nVertical[v];
+
+        if (n != null) {
+            while (n.down != null) {
+                if (n.left != null && n.right != null) {
+                    n.left.right = n.right;
+                    n.right.left = n.left;
+                } else if (n.left != null) {
+                    n.left.right = null;
+                } else {
+                    n.right.left = null;
+                }
+
+            }
+        }
+    }
+
+
     //TODO remove
     public void printB() {
         final int N = nHorizontal.length;
