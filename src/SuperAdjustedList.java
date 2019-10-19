@@ -2,7 +2,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 public class SuperAdjustedList {
-    private int[][] adjacencyMatrix;
+    int[][] adjacencyMatrix;
     private List<Set<VertexWithMarker>> M2; //TODO
     private List<Set<Integer>> Ls;
 
@@ -17,7 +17,7 @@ public class SuperAdjustedList {
         N = new FourTimesLinkedList(adjacencyList);
     }
 
-    //TODO M2 is needed to supplement the graph, so I do not know if this is necessary?
+    //TODO M2 is needed to supplement the graph, so I do not know if this is necessary
     private void fillM2(List<Set<Integer>> adjacencyList) {
         int N = adjacencyList.size();
         M2 = new ArrayList<>(N);
